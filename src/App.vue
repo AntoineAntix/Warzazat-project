@@ -9,9 +9,8 @@
       <v-btn
         text
         href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank"
-      >
-        <span class="mr-2">Connexion</span>
+        target="_blank">
+        <span >Connexion</span>
       </v-btn>
     </v-app-bar>
 
