@@ -15,7 +15,7 @@
     </v-app-bar>
 
     <v-content>
-      <HelloWorld/>
+      <Warzazat/>
     </v-content>
   </v-app>
 </template>
