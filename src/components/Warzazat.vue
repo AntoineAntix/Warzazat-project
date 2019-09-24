@@ -87,7 +87,6 @@
 <script>
 export default {
   data: () => ({
-  
   })
 }
 

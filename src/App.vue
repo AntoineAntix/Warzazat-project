@@ -2,8 +2,8 @@
   <v-app>
     <v-app-bar app>
       <v-toolbar-title class="headline text-uppercase">
-        <span>Vuetify</span>
-        <span class="font-weight-light">MATERIAL DESIGN</span>
+        <span>Warzazat :</span>
+        <span class="font-weight-light">Test de Q.I.</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn
@@ -11,7 +11,7 @@
         href="https://github.com/vuetifyjs/vuetify/releases/latest"
         target="_blank"
       >
-        <span class="mr-2">Latest Release</span>
+        <span class="mr-2">Connexion</span>
       </v-btn>
     </v-app-bar>
 
@@ -22,12 +22,12 @@
 </template>
 
 <script>
-import HelloWorld from './components/HelloWorld'
+import Warzazat from './components/Warzazat'
 
 export default {
   name: 'App',
   components: {
-    HelloWorld
+    Warzazat
   },
   data: () => ({
     //
