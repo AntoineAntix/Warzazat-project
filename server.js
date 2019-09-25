@@ -33,7 +33,7 @@ app.post('/api/login', (req, res) => {
     const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
     if (!user) {
       res.json({
-        message: "user doesn't connected"
+        message: "user doesn't exist"
       })
     } else {
       // connect the user
@@ -57,9 +57,12 @@ app.post('/api/addLog', (req, res) => {
       username: req.body.login,
       password: req.body.password
     })
+    res.json({
+      message: 'user created succesfull'
+    })
   } else {
     res.json({
-      message: 'user already created'
+      message: 'user already exist, please enter new id'
     })
   }
 })

@@ -8,24 +8,24 @@
       <v-spacer></v-spacer>
       <v-btn
         text
-        href="./Connexion">
+        href="./src/components/Connexion">
         <span >Connexion</span>
       </v-btn>
     </v-app-bar>
 
     <v-content>
-      <Connexion/>
+      <Warzazat/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Connexion from './components/Connexion'
+import Warzazat from './components/Warzazat'
 
 export default {
   name: 'App',
   components: {
-    Connexion
+    Warzazat
   },
   data: () => ({
     //
