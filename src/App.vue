@@ -8,25 +8,24 @@
       <v-spacer></v-spacer>
       <v-btn
         text
-        href="https://github.com/vuetifyjs/vuetify/releases/latest"
-        target="_blank">
+        href="./Connexion">
         <span >Connexion</span>
       </v-btn>
     </v-app-bar>
 
     <v-content>
-      <Warzazat/>
+      <Connexion/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Warzazat from './components/Warzazat'
+import Connexion from './components/Connexion'
 
 export default {
   name: 'App',
   components: {
-    Warzazat
+    Connexion
   },
   data: () => ({
     //
