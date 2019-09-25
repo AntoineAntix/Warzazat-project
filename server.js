@@ -26,26 +26,15 @@ const users = [{
   password: 'changethispassword'
 }]
 
-app.get('/api/test', (req, res) => {
-  console.log('ce console.log est appelé au bon moment')
-  res.json([
-    {
-      title: 'truc',
-      content: 'machin'
-    }, {
-      title: 'truc2',
-      content: 'machin2'
-    }
-  ])
-})
-
 app.post('/api/login', (req, res) => {
   console.log('req.body', req.body)
   console.log('req.query', req.query)
   if (!req.session.userId) {
-    const user = users.find(u => u.username === req.body.username && u.password === req.body.password)
+    const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
     if (!user) {
-      // gérez le cas où on n'a pas trouvé d'utilisateur correspondant
+      res.json({
+        message: "user doesn't connected"
+      })
     } else {
       // connect the user
       req.session.userId = 1000 // connect the user, and change the id
@@ -57,6 +46,20 @@ app.post('/api/login', (req, res) => {
     res.status(401)
     res.json({
       message: 'you are already connected'
+    })
+  }
+})
+
+app.post('/api/addLog', (req, res) => {
+  const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
+  if (!user) {
+    users.push({
+      username: req.body.login,
+      password: req.body.password
+    })
+  } else {
+    res.json({
+      message: 'user already created'
     })
   }
 })
