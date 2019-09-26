@@ -35,6 +35,7 @@
 
 export default {
   data: () => ({
+    url: 'http://localhost:4000',
     connexion: true,
     connecte: false,
     test: false,
@@ -44,26 +45,24 @@ export default {
     score: 0
   }),
   methods: {
-    login () {
+    async login () {
       // connecter l'utilisateur
-      this.axios.post('/api/login', {
+      const response = await this.axios.post(this.url + '/api/login', {
         login: this.username,
         password: this.password
       })
-        .then(jsondata => {
-          this.message = jsondata.data.message
-          if (jsondata.data.message === 'connected') {
-            this.connexion = false
-            this.connecte = true
-          }
-        })
+      this.message = response.data.message
+      if (this.message === 'connected') {
+        this.connexion = false
+        this.connecte = true
+      }
     },
-    addLog () {
-      this.axios.post('api/addLog', {
+    async addLog () {
+      const response = await this.axios.post(this.url + '/api/addLog', {
         login: this.username,
         password: this.password
       })
-        .then(jsondata => { this.message = jsondata.data.message })
+      this.message = response.data.message
     },
     logout () {
     },

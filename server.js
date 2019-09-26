@@ -17,9 +17,14 @@ app.use(session({
   saveUninitialized: true,
   cookie: { secure: false } // ne changez que si vous avez activé le https
 }))
+
+app.use(cors({
+  credentials: true,
+  origin: 'http://localhost:8080'
+}))
+
 app.use(morgan('dev'))
 app.use(bodyParser.json())
-app.use(cors())
 
 const path = require('path')
 app.use(express.static(path.join(__dirname, 'dist/')))
