@@ -13,12 +13,17 @@
         </v-container>
 
       <v-container v-if="connecte">
-                <v-col cols="12" md="4">
                   <h1>BIENVENUE {{username}} </h1>
                   <div> Votre score est de {{score}}</div>
 
-                  <v-btn v-on:click="test">Lancer le test</v-btn>
-                </v-col>
+                  <v-btn v-on:click="lancementTest">Lancer le test</v-btn>
+      </v-container>
+
+      <v-container v-if="test">
+                  <div>
+                    <span style="bold"> Question 1:</span>
+                    </div>
+                  <div> Votre score est de {{score}}</div>
       </v-container>
 
       </v-form>
@@ -32,6 +37,7 @@ export default {
   data: () => ({
     connexion: true,
     connecte: false,
+    test: false,
     username: '',
     password: '',
     message: '',
@@ -40,7 +46,7 @@ export default {
   methods: {
     login () {
       // connecter l'utilisateur
-      this.axios.post('http://localhost:4000/api/login', {
+      this.axios.post('/api/login', {
         login: this.username,
         password: this.password
       })
@@ -53,13 +59,17 @@ export default {
         })
     },
     addLog () {
-      this.axios.post('http://localhost:4000/api/addLog', {
+      this.axios.post('api/addLog', {
         login: this.username,
         password: this.password
       })
         .then(jsondata => { this.message = jsondata.data.message })
     },
     logout () {
+    },
+    lancementTest () {
+      this.connecte = false
+      this.test = true
     }
   }
 }
