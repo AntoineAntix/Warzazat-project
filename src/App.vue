@@ -14,18 +14,18 @@
     </v-app-bar>
 
     <v-content>
-      <Warzazat/>
+      <Test/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Warzazat from './components/Warzazat'
+import Test from './components/Test'
 
 export default {
   name: 'App',
   components: {
-    Warzazat
+    Test
   },
   data: () => ({
     //
