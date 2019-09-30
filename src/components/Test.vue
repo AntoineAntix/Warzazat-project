@@ -101,7 +101,6 @@ export default {
         this.index = 0
         this.test = false
         this.connecte = true
-        
       }
     }
   }
