@@ -31,7 +31,8 @@ app.use(express.static(path.join(__dirname, 'dist/')))
 
 const users = [{
   username: 'admin',
-  password: 'changethispassword'
+  password: 'changethispassword',
+  hscore: 1000
 }]
 
 app.post('/api/login', (req, res) => {
@@ -75,18 +76,11 @@ app.post('/api/addLog', (req, res) => {
   }
 })
 
-app.get('/api/logout', (req, res) => {
-  if (!req.session.userId) {
-    res.status(401)
-    res.json({
-      message: 'you are already disconnected'
-    })
-  } else {
-    req.session.userId = 0
-    res.json({
-      message: 'you are now disconnected'
-    })
-  }
+app.post('/api/logout', (req, res) => {
+  req.session.user = 0
+  res.json({
+    message: 'disconnected'
+  })
 })
 
 app.get('/api/admin', (req, res) => {

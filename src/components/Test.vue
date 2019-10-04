@@ -1,7 +1,15 @@
 <template>
-    <v-content>
-      <v-layout text-center wrap>
-      <v-form v-model="valid">
+    <div>
+      <v-app-bar>
+      <v-toolbar-title class="headline text-uppercase">
+        <span>Warzazat :</span>
+        <span class="font-weight-light">Test de Q.I.</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-btn v-on:click="logout">
+        <span >Logout</span>
+      </v-btn>
+    </v-app-bar>
 
         <v-container v-if="connexion">
           <v-text-field v-model="username" label="Username" required></v-text-field>
@@ -14,7 +22,7 @@
 
       <v-container v-if="connecte">
                   <h1>BIENVENUE {{username}} </h1>
-                  <div> Votre score est de {{score}}</div>
+                  <p> Votre score est de {{hscore}}</p>
 
                   <v-btn v-on:click="lancementTest">Lancer le test</v-btn>
       </v-container>
@@ -33,10 +41,8 @@
                     <v-btn v-on:click="nextQ">Question suivante</v-btn>
                   </div>
       </v-container>
+    </div>
 
-      </v-form>
-    </v-layout>
-    </v-content>
 </template>
 
 <script>
@@ -84,7 +90,14 @@ export default {
       })
       this.message = response.data.message
     },
-    logout () {
+    async logout () {
+      const response = await this.axios.post(this.url + '/api/logout', {
+      })
+      this.message = response.data.message
+      if (this.message === 'disconnected') {
+        this.connecte = false
+        this.connexion = true
+      }
     },
     lancementTest () {
       this.connecte = false
@@ -92,16 +105,17 @@ export default {
       this.score = 0
     },
     nextQ () {
-      if (this.questions[this.index].answer === this.radioGroup) {
-        this.score++
-      }
+      if (this.questions[this.index].answer === this.radioGroup) { this.score++ }
       this.index++
       this.radioGroup = null
       if (this.index >= Object.keys(this.questions).length) {
         this.index = 0
+        if (this.hscore < this.score) { this.hscore = this.score }
         this.test = false
         this.connecte = true
       }
+    },
+    changeHScore () {
     }
   }
 }
