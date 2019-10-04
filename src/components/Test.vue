@@ -78,6 +78,7 @@ export default {
         password: this.password
       })
       this.message = response.data.message
+      this.hscore = response.data.score
       if (this.message === 'connected') {
         this.connexion = false
         this.connecte = true
@@ -99,23 +100,34 @@ export default {
         this.connexion = true
       }
     },
+
+    async changeHScore () {
+      await this.axios.post(this.url + '/api/newHscore', {
+        login: this.username,
+        password: this.password,
+        hscore: this.hscore
+      })
+    },
+
     lancementTest () {
       this.connecte = false
       this.test = true
       this.score = 0
     },
+
     nextQ () {
       if (this.questions[this.index].answer === this.radioGroup) { this.score++ }
       this.index++
       this.radioGroup = null
       if (this.index >= Object.keys(this.questions).length) {
         this.index = 0
-        if (this.hscore < this.score) { this.hscore = this.score }
+        if (this.hscore < this.score) {
+          this.hscore = this.score
+          this.changeHScore()
+        }
         this.test = false
         this.connecte = true
       }
-    },
-    changeHScore () {
     }
   }
 }

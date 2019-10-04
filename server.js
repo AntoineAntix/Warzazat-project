@@ -48,7 +48,8 @@ app.post('/api/login', (req, res) => {
       // connect the user
       req.session.userId = 1000 // connect the user, and change the id
       res.json({
-        message: 'connected'
+        message: 'connected',
+        score: user.hscore
       })
     }
   } else {
@@ -64,7 +65,8 @@ app.post('/api/addLog', (req, res) => {
   if (!user) {
     users.push({
       username: req.body.login,
-      password: req.body.password
+      password: req.body.password,
+      hscore: 0
     })
     res.json({
       message: 'user created succesfull'
@@ -81,6 +83,11 @@ app.post('/api/logout', (req, res) => {
   res.json({
     message: 'disconnected'
   })
+})
+
+app.post('/api/newHscore', (req, res) => {
+  const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
+  user.hscore = req.body.hscore
 })
 
 app.get('/api/admin', (req, res) => {
