@@ -23,7 +23,11 @@
       <v-container v-if="connecte">
                   <h1>BIENVENUE {{username}} </h1>
                   <p> Votre score est de {{hscore}}</p>
-
+                  <div>
+                    <li v-for="(sc, s) in tabHscore" :key="s">
+                      {{ sc.highscore }}
+                    </li>
+                  </div>
                   <v-btn v-on:click="lancementTest">Lancer le test</v-btn>
       </v-container>
 
@@ -59,6 +63,7 @@ export default {
     message: '',
     hscore: 0,
     index: 0,
+    tabHscore: [{ highscore: 0 }],
     questions: [
       { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'ta mère'], answer: 0 },
       { title: 'Comment je vais ?', prop: ['Bien', 'Pas bien'], answer: 0 },
@@ -78,10 +83,11 @@ export default {
         password: this.password
       })
       this.message = response.data.message
-      this.hscore = response.data.score
       if (this.message === 'connected') {
         this.connexion = false
         this.connecte = true
+        this.hscore = response.data.score
+        this.tabHscore = response.data.tabHscore
       }
     },
     async addLog () {
@@ -96,16 +102,18 @@ export default {
       })
       this.message = response.data.message
       if (this.message === 'disconnected') {
+        this.test = false
         this.connecte = false
         this.connexion = true
       }
     },
 
-    async changeHScore () {
+    async newHScore () {
       await this.axios.post(this.url + '/api/newHscore', {
         login: this.username,
         password: this.password,
-        hscore: this.hscore
+        hscore: this.hscore,
+        tabHscore: this.tabHscore
       })
     },
 
@@ -113,6 +121,7 @@ export default {
       this.connecte = false
       this.test = true
       this.score = 0
+      this.index = 0
     },
 
     nextQ () {
@@ -123,10 +132,13 @@ export default {
         this.index = 0
         if (this.hscore < this.score) {
           this.hscore = this.score
-          this.changeHScore()
         }
+        this.tabHscore.push({
+          highscore: this.score
+        })
         this.test = false
         this.connecte = true
+        this.newHScore()
       }
     }
   }

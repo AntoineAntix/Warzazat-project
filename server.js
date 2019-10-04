@@ -31,8 +31,9 @@ app.use(express.static(path.join(__dirname, 'dist/')))
 
 const users = [{
   username: 'admin',
-  password: 'changethispassword',
-  hscore: 1000
+  password: 'admin',
+  hscore: 1000,
+  tabHscore: [{ highscore: 1000 }]
 }]
 
 app.post('/api/login', (req, res) => {
@@ -49,7 +50,8 @@ app.post('/api/login', (req, res) => {
       req.session.userId = 1000 // connect the user, and change the id
       res.json({
         message: 'connected',
-        score: user.hscore
+        score: user.hscore,
+        tabHscore: user.tabHscore
       })
     }
   } else {
@@ -66,7 +68,8 @@ app.post('/api/addLog', (req, res) => {
     users.push({
       username: req.body.login,
       password: req.body.password,
-      hscore: 0
+      hscore: 0,
+      tabHscore: [{ highscore: 0 }]
     })
     res.json({
       message: 'user created succesfull'
@@ -88,6 +91,7 @@ app.post('/api/logout', (req, res) => {
 app.post('/api/newHscore', (req, res) => {
   const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
   user.hscore = req.body.hscore
+  user.tabHscore = req.body.tabHscore
 })
 
 app.get('/api/admin', (req, res) => {
