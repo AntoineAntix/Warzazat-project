@@ -1,5 +1,5 @@
-<template>
-  <v-app>
+<template color="black">
+  <v-app >
     <v-content>
       <Test/>
     </v-content>

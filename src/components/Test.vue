@@ -15,8 +15,10 @@
           <v-text-field v-model="username" label="Username" required></v-text-field>
           <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
 
-          <v-btn v-on:click="login">Connexion</v-btn>
+          <div align="cente" justify="center">
+          <v-btn v-on:click="login" color="light-blue">Connexion</v-btn>
           <v-btn v-on:click="addLog">Inscription</v-btn>
+          </div>
           <p>{{message}}</p>
         </v-container>
 
