@@ -33,7 +33,7 @@ const users = [{
   username: 'admin',
   password: 'admin',
   hscore: 1000,
-  tabHscore: [{ highscore: 1000 }]
+  tabHscore: [1000]
 }]
 
 app.post('/api/login', (req, res) => {
@@ -69,7 +69,7 @@ app.post('/api/addLog', (req, res) => {
       username: req.body.login,
       password: req.body.password,
       hscore: 0,
-      tabHscore: [{ highscore: 0 }]
+      tabHscore: [0]
     })
     res.json({
       message: 'user created succesfull'

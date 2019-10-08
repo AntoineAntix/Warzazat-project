@@ -14,7 +14,6 @@
         <v-container v-if="connexion">
           <v-text-field v-model="username" label="Username" required></v-text-field>
           <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
-          
           <v-btn v-on:click="login" color="light-blue" dark>Connexion</v-btn>
           <v-btn v-on:click="addLog">Inscription</v-btn>
           <p>{{message}}</p>
@@ -24,8 +23,8 @@
                   <h1>BIENVENUE {{username}} </h1>
                   <p> Votre score est de {{hscore}}</p>
                   <div>
-                    <li v-for="(sc, s) in tabHscore" :key="s">
-                      {{ sc.highscore }}
+                    <li v-for="(score,index) in tabHscore" :key="score">
+                      {{ tabHscore[index] }}
                     </li>
                   </div>
                   <v-btn v-on:click="lancementTest">Lancer le test</v-btn>
@@ -63,7 +62,7 @@ export default {
     message: '',
     hscore: 0,
     index: 0,
-    tabHscore: [{ highscore: 0 }],
+    tabHscore: [0],
     questions: [
       { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'ta mère'], answer: 0 },
       { title: 'Comment je vais ?', prop: ['Bien', 'Pas bien'], answer: 0 },
