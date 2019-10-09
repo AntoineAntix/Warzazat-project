@@ -36,6 +36,8 @@ const users = [{
   tabHscore: [1000]
 }]
 
+const answer = [ 0, 0, 3, 3, 0, 1, 1 ]
+
 app.post('/api/login', (req, res) => {
   console.log('req.body', req.body)
   console.log('req.query', req.query)
@@ -69,7 +71,7 @@ app.post('/api/addLog', (req, res) => {
       username: req.body.login,
       password: req.body.password,
       hscore: 0,
-      tabHscore: [0]
+      tabHscore: []
     })
     res.json({
       message: 'user created succesfull'
@@ -92,6 +94,21 @@ app.post('/api/newHscore', (req, res) => {
   const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
   user.hscore = req.body.hscore
   user.tabHscore = req.body.tabHscore
+  res.json({
+    message: 'Score saved'
+  })
+})
+
+app.post('/api/nextQ', (req, res) => {
+  if (answer[req.body.index] === req.body.rep) {
+    res.json({
+      message: 'good'
+    })
+  } else {
+    res.json({
+      message: 'not good'
+    })
+  }
 })
 
 app.get('/api/admin', (req, res) => {
