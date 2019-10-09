@@ -7,7 +7,7 @@
       </v-toolbar-title>
       <v-spacer></v-spacer>
       <v-btn v-if="connexion === false" v-on:click="logout" color="light-blue" rounded>
-        <span >Logout</span>
+        <span >Déconnection</span>
       </v-btn>
     </v-app-bar>
 
@@ -29,7 +29,7 @@
 
       <v-container text-center v-if="connecte" >
                   <h1>BIENVENUE {{username}} </h1>
-                  <p> Votre score est de {{hscore}}</p>
+                  <p> Votre Meilleur Score est de {{hscore}}</p>
 
                   <v-card class="mx-auto" max-width="1000" outlined>
                     <v-layout class="align-center">
@@ -54,8 +54,8 @@
                                    {{ item.value }} points
                            </template></v-sparkline>
                         </v-sheet>
-                        <span v-if="tabHscore.length === 0" > Please do 2 tests for showing you progression graph. </span>
-                        <span v-if="tabHscore.length === 1" > Please do 1 tests for showing you progression graph. </span>
+                        <span v-if="tabHscore.length === 0" > Veuillez faire 2 tests pour voir votre courbe de progression </span>
+                        <span v-if="tabHscore.length === 1" > Veuillez faire 1 tests pour voir votre courbe de progression </span>
                     </v-card-text>
                     </v-layout>
                   </v-card>
@@ -82,7 +82,8 @@
                   </v-row>
                   <br>
                   <v-row justify="end">
-                    <v-btn v-on:click="nextQ" color="light-blue" rounded>Question suivante</v-btn>
+                    <v-btn v-if="(index+1) < questions.length" v-on:click="nextQ" color="light-blue" rounded>Question suivante</v-btn>
+                    <v-btn v-if="(index+1) === questions.length" v-on:click="nextQ" color="orange" rounded>Fin du test</v-btn>
                   </v-row>
       </v-container>
 
@@ -124,7 +125,7 @@ export default {
         password: this.password
       })
       this.message = response.data.message
-      if (this.message === 'connected') {
+      if (this.message === 'Connecté') {
         this.connexion = false
         this.connecte = true
         this.hscore = response.data.score
@@ -142,7 +143,7 @@ export default {
       const response = await this.axios.post(this.url + '/api/logout', {
       })
       this.message = response.data.message
-      if (this.message === 'disconnected') {
+      if (this.message === 'Déconnecté') {
         this.test = false
         this.connecte = false
         this.connexion = true

@@ -45,13 +45,13 @@ app.post('/api/login', (req, res) => {
     const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
     if (!user) {
       res.json({
-        message: "user doesn't exist"
+        message: "L'utilisateur n'existe pas"
       })
     } else {
       // connect the user
       req.session.userId = 1000 // connect the user, and change the id
       res.json({
-        message: 'connected',
+        message: 'Connecté',
         score: user.hscore,
         tabHscore: user.tabHscore
       })
@@ -59,7 +59,7 @@ app.post('/api/login', (req, res) => {
   } else {
     res.status(401)
     res.json({
-      message: 'you are already connected'
+      message: 'Vous êtes déjà connecté'
     })
   }
 })
@@ -74,11 +74,11 @@ app.post('/api/addLog', (req, res) => {
       tabHscore: []
     })
     res.json({
-      message: 'user created succesfull'
+      message: 'Utilisateur créé avec succés'
     })
   } else {
     res.json({
-      message: 'user already exist, please enter new id'
+      message: 'Utilisateur existant, veuillez entrer de nouveaux identifiants'
     })
   }
 })
@@ -86,7 +86,7 @@ app.post('/api/addLog', (req, res) => {
 app.post('/api/logout', (req, res) => {
   req.session.user = 0
   res.json({
-    message: 'disconnected'
+    message: 'Déconnecté'
   })
 })
 
