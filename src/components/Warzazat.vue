@@ -1,37 +1,75 @@
 <template>
-    <div>
-      <v-app-bar>
+    <v-container>
+      <v-app-bar app>
       <v-toolbar-title class="headline text-uppercase">
         <span>Warzazat :</span>
-        <span class="font-weight-light">Test de Q.I.</span>
+        <span class="font-weight-light">Test de Warzatitude.</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
-      <v-btn v-on:click="logout">
-        <span >Logout</span>
+      <v-btn v-if="connexion === false" v-on:click="logout" color="light-blue" rounded>
+        <span >Déconnection</span>
       </v-btn>
     </v-app-bar>
 
-        <v-container v-if="connexion">
-          <v-text-field v-model="username" label="Username" required></v-text-field>
+    <v-content >
+      <v-container text-center v-if="connexion" class="align-center">
+        <v-card class="mx-auto" width="300" height="300" elevation="20">
+        <v-row justify="center">
+            <div>
+          <v-text-field v-model="username" label="Username" required ></v-text-field>
           <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
-          <v-btn v-on:click="login" color="light-blue" dark>Connexion</v-btn>
-          <v-btn v-on:click="addLog">Inscription</v-btn>
+            </div>
+        </v-row>
+          <br><br>
+          <v-btn v-on:click="login" color="light-blue" rounded>Connexion</v-btn>
+          <v-btn v-on:click="addLog" rounded>Inscription</v-btn>
           <p>{{message}}</p>
-        </v-container>
+        </v-card>
+      </v-container>
 
-      <v-container v-if="connecte">
+      <v-container text-center v-if="connecte" >
                   <h1>BIENVENUE {{username}} </h1>
-                  <p> Votre score est de {{hscore}}</p>
-                  <div>
-                    <li v-for="(score,index) in tabHscore" :key="score">
-                      {{ tabHscore[index] }}
-                    </li>
-                  </div>
-                  <v-btn v-on:click="lancementTest">Lancer le test</v-btn>
+                  <p> Votre Meilleur Score est de {{hscore}}</p>
+
+                  <v-card class="mx-auto" max-width="1000" outlined>
+                    <v-layout class="align-center">
+                        <v-flex min-width="300">
+                  <v-card-text>
+                    <span> Liste des scores :</span> <br>
+                      <span v-for="(item,s) in tabHscore" :key="s">
+                         {{ item }} <br>
+                      </span>
+                  </v-card-text>
+                      </v-flex>
+                   <v-card-text>
+                       <v-sheet color="rgba(0, 0, 0, .12)" v-if="tabHscore.length > 1">
+                          <v-sparkline :value="tabHscore"
+                          color="rgba(0, 255, 255, .7)"
+                          width="500"
+                          height="100"
+                          padding="24"
+                          stroke-linecap="round"
+                          smooth>
+                          <template v-slot:label="item">
+                                   {{ item.value }} points
+                           </template></v-sparkline>
+                        </v-sheet>
+                        <span v-if="tabHscore.length === 0" > Veuillez faire 2 tests pour voir votre courbe de progression </span>
+                        <span v-if="tabHscore.length === 1" > Veuillez faire 1 tests pour voir votre courbe de progression </span>
+                    </v-card-text>
+                    </v-layout>
+                  </v-card>
+
+                  <br><br>
+                  <v-btn v-on:click="lancementTest" color="orange" rounded>Lancer le test</v-btn>
       </v-container>
 
       <v-container v-if="test">
-              <p> {{ score }} </p>
+        <v-row justify="center">
+              <p>Score actuel : {{ score }} </p>
+        </v-row>
+              <br>
+              <v-row justify="center">
                   <div v-if="index >= 0">
                     <span style="bold"> Question {{ index + 1 }}:</span>
                     <br>
@@ -40,12 +78,17 @@
                     <v-radio-group v-model="radioGroup">
                       <v-radio v-for="(item, i) in questions[index].prop" :key="i" :label="item">  </v-radio><br>
                     </v-radio-group>
-
-                    <v-btn v-on:click="nextQ">Question suivante</v-btn>
                   </div>
+                  </v-row>
+                  <br>
+                  <v-row justify="end">
+                    <v-btn v-if="(index+1) < questions.length" v-on:click="nextQ" color="light-blue" rounded>Question suivante</v-btn>
+                    <v-btn v-if="(index+1) === questions.length" v-on:click="nextQ" color="orange" rounded>Fin du test</v-btn>
+                  </v-row>
       </v-container>
-    </div>
 
+    </v-content>
+    </v-container>
 </template>
 
 <script>
@@ -62,15 +105,15 @@ export default {
     message: '',
     hscore: 0,
     index: 0,
-    tabHscore: [0],
+    tabHscore: [],
     questions: [
-      { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'ta mère'], answer: 0 },
-      { title: 'Comment je vais ?', prop: ['Bien', 'Pas bien'], answer: 0 },
-      { title: 'Combien de vêtments portez-vous ?', prop: ['10', '5', '0'], answer: 2 },
-      { title: 'Alexandre Biau est-il homosexuel ?', prop: ['Oui', 'Non'], answer: 0 },
-      { title: 'Comment me trouvez vous ?', prop: ['Moche', 'Le plus beau', 'Etes-vous réel ?'], answer: 2 },
-      { title: 'Paris ou Marseille ?', prop: ['Paris', 'Marseille'], answer: 1 },
-      { title: 'Quelle est la taille du nez de Messet ?', prop: ['5 cm', 'La meme taille que son sexe', '1 mètre'], answer: 1 }
+      { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'Bonjour'] },
+      { title: 'Comment je vais ?', prop: ['Bien', 'Pas bien'] },
+      { title: "Combien de jours d'anniversaires a une personne qui a vécu 50 ans ", prop: ['0 anniversaire', '1 anniversaire', '25 anniversaires', '50 anniversaires', '49 anniversaires'] },
+      { title: "Certains mois de l'année comptent 31 jours. Combien en ont 28 ?", prop: ['Aucun', '1 mois', '6 mois', '12 mois'] },
+      { title: "Monsieur et Madame Doeuf on un fils, comment s'appelle-t-il?", prop: ['John', 'Donald', 'Mathieu'] },
+      { title: 'Paris ou Marseille ?', prop: ['Paris', 'Marseille'] },
+      { title: 'Je ne vole pas, je me transforme, je vole, qui suis-je ?', prop: ['un lapin', 'une chenille', 'un oeuf'] }
     ],
     score: 0
   }),
@@ -82,7 +125,7 @@ export default {
         password: this.password
       })
       this.message = response.data.message
-      if (this.message === 'connected') {
+      if (this.message === 'Connecté') {
         this.connexion = false
         this.connecte = true
         this.hscore = response.data.score
@@ -100,7 +143,7 @@ export default {
       const response = await this.axios.post(this.url + '/api/logout', {
       })
       this.message = response.data.message
-      if (this.message === 'disconnected') {
+      if (this.message === 'Déconnecté') {
         this.test = false
         this.connecte = false
         this.connexion = true
@@ -108,12 +151,13 @@ export default {
     },
 
     async newHScore () {
-      await this.axios.post(this.url + '/api/newHscore', {
+      const response = await this.axios.post(this.url + '/api/newHscore', {
         login: this.username,
         password: this.password,
         hscore: this.hscore,
         tabHscore: this.tabHscore
       })
+      console.log(response)
     },
 
     lancementTest () {
@@ -123,8 +167,13 @@ export default {
       this.index = 0
     },
 
-    nextQ () {
-      if (this.questions[this.index].answer === this.radioGroup) { this.score++ }
+    async nextQ () {
+      const response = await this.axios.post(this.url + '/api/nextQ', {
+        index: this.index,
+        rep: this.radioGroup
+      })
+
+      if (response.data.message === 'good') { this.score++ } else { console.log('wrong answer') }
       this.index++
       this.radioGroup = null
       if (this.index >= Object.keys(this.questions).length) {
@@ -132,9 +181,7 @@ export default {
         if (this.hscore < this.score) {
           this.hscore = this.score
         }
-        this.tabHscore.push({
-          highscore: this.score
-        })
+        this.tabHscore.push(this.score)
         this.test = false
         this.connecte = true
         this.newHScore()

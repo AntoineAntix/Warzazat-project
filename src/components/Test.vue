@@ -1,6 +1,9 @@
 <template>
-    <v-container>
-      <v-app-bar app>
+    <div>
+      <v-app style="background: url(https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg )">
+      <v-navigation-drawer fixed clipped v-if="connexion === false && drawer" app> </v-navigation-drawer>
+      <v-toolbar dense fixed clipped-left app max-height="50">
+        <v-app-bar-nav-icon v-if="connexion === false" @click.stop="drawer=!drawer"></v-app-bar-nav-icon>
       <v-toolbar-title class="headline text-uppercase">
         <span>Warzazat :</span>
         <span class="font-weight-light">Test de Warzatitude.</span>
@@ -9,15 +12,15 @@
       <v-btn v-if="connexion === false" v-on:click="logout" color="light-blue" rounded>
         <span >Déconnection</span>
       </v-btn>
-    </v-app-bar>
+      </v-toolbar>
 
-    <v-content >
+    <v-content>
       <v-container text-center v-if="connexion" class="align-center">
         <v-card class="mx-auto" width="300" height="300" elevation="20">
         <v-row justify="center">
             <div>
-          <v-text-field v-model="username" label="Username" required ></v-text-field>
-          <v-text-field v-model="password" label="Password" type="password" required></v-text-field>
+          <v-text-field prepend-icon="person" v-model="username" label="Username" required ></v-text-field>
+          <v-text-field prepend-icon="lock" v-model="password" label="Password" type="password" required></v-text-field>
             </div>
         </v-row>
           <br><br>
@@ -88,7 +91,15 @@
       </v-container>
 
     </v-content>
-    </v-container>
+
+    <v-layout class="align-end">
+            <span :class="`d-flex justify-start`"> Made by LUCAS Antoine & MESSET Mathieu</span>
+            <v-spacer></v-spacer>
+            <span :class="`d-flex justify-end`"><v-img src="./Img/logo-ESIEA.jpg" max-width="172" max-height="90"> </v-img></span>
+    </v-layout>
+
+      </v-app>
+    </div>
 </template>
 
 <script>
@@ -96,6 +107,7 @@
 export default {
   data: () => ({
     url: 'http://localhost:4000',
+    drawer: false,
     radioGroup: null,
     connexion: true,
     connecte: false,
