@@ -1,14 +1,47 @@
 <template>
     <div>
       <v-app style="background: url(https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg )">
-      <v-navigation-drawer fixed clipped v-if="connexion === false && drawer" app> </v-navigation-drawer>
+      <v-navigation-drawer fixed clipped v-model="drawer" v-if="connexion === false && drawerbar" app>
+        <v-layout align-content-space-around justify-center>
+        <v-icon x-large>person</v-icon>
+        <span>
+        <h1> {{username}} </h1>
+        <p> High Score : {{hscore}} </p>
+        </span>
+        </v-layout>
+        <v-flex class="text-center">
+        <v-btn color="light-blue" rounded>Voir Info. </v-btn>
+        </v-flex>
+        <v-divider dark class="my-3"></v-divider>
+        <v-flex align-content-space-around>
+
+        <v-btn text block v-on:click="homeReturn">
+          <v-icon>home</v-icon>
+          Accueil
+        </v-btn>
+        <v-divider dark class="my-3"></v-divider>
+
+        <v-btn text block v-on:click="showClassement">
+          <v-icon>liste</v-icon> Voir classement
+        </v-btn>
+        <v-divider dark class="my-3"></v-divider>
+
+         <v-btn text block>
+          <v-icon>history</v-icon> Historique partie
+        </v-btn>
+        </v-flex>
+      </v-navigation-drawer>
+
       <v-toolbar dense fixed clipped-left app max-height="50">
-        <v-app-bar-nav-icon v-if="connexion === false" @click.stop="drawer=!drawer"></v-app-bar-nav-icon>
+        <v-app-bar-nav-icon v-if="connexion === false && test === false" @click.stop="drawerbar=!drawerbar"></v-app-bar-nav-icon>
       <v-toolbar-title class="headline text-uppercase">
         <span>Warzazat :</span>
         <span class="font-weight-light">Test de Warzatitude.</span>
       </v-toolbar-title>
       <v-spacer></v-spacer>
+      <v-btn v-if="connexion === false" v-on:click="homeReturn" rounded>
+        <v-icon>home</v-icon>
+      </v-btn>
       <v-btn v-if="connexion === false" v-on:click="logout" color="light-blue" rounded>
         <span >Déconnection</span>
       </v-btn>
@@ -30,7 +63,7 @@
         </v-card>
       </v-container>
 
-      <v-container text-center v-if="connecte" >
+      <v-container text-center v-if="connecte" class="justify-center">
                   <h1>BIENVENUE {{username}} </h1>
                   <p> Votre Meilleur Score est de {{hscore}}</p>
 
@@ -90,6 +123,18 @@
                   </v-row>
       </v-container>
 
+      <v-container v-if="classement">
+        <v-card class="mx-auto" max-width="1000" outlined>
+          <v-layout class="align-center">
+              <v-flex min-width="300">
+          <v-card-text>
+            <span> rang : {{rank}} pour {{ partieJouer }} parties</span>
+          </v-card-text>
+              </v-flex>
+          </v-layout>
+        </v-card>
+      </v-container>
+
     </v-content>
 
     <v-layout class="align-end">
@@ -107,17 +152,24 @@
 export default {
   data: () => ({
     url: 'http://localhost:4000',
-    drawer: false,
+
+    drawerbar: false,
     radioGroup: null,
     connexion: true,
     connecte: false,
     test: false,
+    classement: false,
+
     username: '',
     password: '',
-    message: '',
     hscore: 0,
-    index: 0,
     tabHscore: [],
+    rank: 8,
+    partieJouer: 0,
+    historique: [{
+      rep: []
+    }],
+
     questions: [
       { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'Bonjour'] },
       { title: 'Comment je vais ?', prop: ['Bien', 'Pas bien'] },
@@ -127,6 +179,10 @@ export default {
       { title: 'Paris ou Marseille ?', prop: ['Paris', 'Marseille'] },
       { title: 'Je ne vole pas, je me transforme, je vole, qui suis-je ?', prop: ['un lapin', 'une chenille', 'un oeuf'] }
     ],
+
+    message: '',
+    index: 0,
+    repQ: [],
     score: 0
   }),
   methods: {
@@ -142,6 +198,8 @@ export default {
         this.connecte = true
         this.hscore = response.data.score
         this.tabHscore = response.data.tabHscore
+        this.rank = response.data.rank
+        this.partieJouer = response.data.partieJouer
       }
     },
     async addLog () {
@@ -159,6 +217,7 @@ export default {
         this.test = false
         this.connecte = false
         this.connexion = true
+        this.classement = false
       }
     },
 
@@ -167,16 +226,11 @@ export default {
         login: this.username,
         password: this.password,
         hscore: this.hscore,
-        tabHscore: this.tabHscore
+        tabHscore: this.tabHscore,
+        rank: this.rank,
+        partieJouer: this.partieJouer
       })
       console.log(response)
-    },
-
-    lancementTest () {
-      this.connecte = false
-      this.test = true
-      this.score = 0
-      this.index = 0
     },
 
     async nextQ () {
@@ -186,18 +240,50 @@ export default {
       })
 
       if (response.data.message === 'good') { this.score++ } else { console.log('wrong answer') }
+
       this.index++
+      this.repQ.push(this.radioGroup)
       this.radioGroup = null
       if (this.index >= Object.keys(this.questions).length) {
         this.index = 0
         if (this.hscore < this.score) {
           this.hscore = this.score
+          this.defRank(this.hscore)
         }
+        this.partieJouer++
         this.tabHscore.push(this.score)
+        this.historique.push(this.repQ)
         this.test = false
         this.connecte = true
         this.newHScore()
       }
+    },
+    lancementTest () {
+      this.connecte = false
+      this.test = true
+      this.classement = false
+      this.score = 0
+      this.index = 0
+    },
+    homeReturn () {
+      this.connecte = true
+      this.connexion = false
+      this.classement = false
+      this.test = false
+    },
+    showClassement () {
+      this.connecte = false
+      this.classement = true
+    },
+    defRank (hscore) {
+      if (hscore === 0) { this.rank = 8 }
+      if (hscore === 1) { this.rank = 7 }
+      if (hscore === 2) { this.rank = 6 }
+      if (hscore === 3) { this.rank = 5 }
+      if (hscore === 4) { this.rank = 4 }
+      if (hscore === 5) { this.rank = 3 }
+      if (hscore === 6) { this.rank = 2 }
+      if (hscore === 7) { this.rank = 1 }
     }
   }
 }

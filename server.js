@@ -33,7 +33,9 @@ const users = [{
   username: 'admin',
   password: 'admin',
   hscore: 1000,
-  tabHscore: [1000]
+  tabHscore: [1000],
+  rank: 0,
+  partieJouer: 0
 }]
 
 const answer = [ 0, 0, 3, 3, 0, 1, 1 ]
@@ -53,7 +55,9 @@ app.post('/api/login', (req, res) => {
       res.json({
         message: 'Connecté',
         score: user.hscore,
-        tabHscore: user.tabHscore
+        tabHscore: user.tabHscore,
+        rank: user.rank,
+        partieJouer: user.partieJouer
       })
     }
   } else {
@@ -71,7 +75,9 @@ app.post('/api/addLog', (req, res) => {
       username: req.body.login,
       password: req.body.password,
       hscore: 0,
-      tabHscore: []
+      tabHscore: [],
+      rank: 8,
+      partieJouer: 0
     })
     res.json({
       message: 'Utilisateur créé avec succés'
@@ -94,6 +100,8 @@ app.post('/api/newHscore', (req, res) => {
   const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
   user.hscore = req.body.hscore
   user.tabHscore = req.body.tabHscore
+  user.rank = req.body.rank
+  user.partieJouer = req.body.partieJouer
   res.json({
     message: 'Score saved'
   })
