@@ -306,6 +306,7 @@ export default {
         this.history = false
         this.correction = false
         this.information = false
+        this.drawerbar = false
       }
     },
 
@@ -324,6 +325,7 @@ export default {
           this.classement = false
           this.history = false
           this.information = false
+          this.drawerbar = false
         }
       }
     },
@@ -402,6 +404,7 @@ export default {
       this.classement = true
       this.history = false
       this.correction = false
+      this.information = false
       const response = await this.axios.post(this.url + '/api/rankClassement', {
       })
       this.tabrank = response.data.tabrank
