@@ -156,6 +156,7 @@
 
       <v-container v-if="history">
         <v-layout align-content-space-around v-if="correction === false">
+          <span v-if="partieJouer === 0"> L'historique est vide tant que vous ne finissez pas une partie </span>
           <span v-for="(item, i) in partieJouer" :key="i" :label="item">
             <v-btn v-on:click="startCorrection(i)"> partie {{i+1}} </v-btn>
           </span>
