@@ -68,9 +68,15 @@ app.post('/api/login', (req, res) => {
       })
     }
   } else {
-    res.status(401)
+    req.session.user = 0
+    const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
+    req.session.userId = 1000 // connect the user, and change the id
     res.json({
-      message: 'Vous êtes déjà connecté'
+      message: 'Connecté',
+      score: user.hscore,
+      tabHscore: user.tabHscore,
+      partieJouer: user.partieJouer,
+      historique: user.historique
     })
   }
 })
