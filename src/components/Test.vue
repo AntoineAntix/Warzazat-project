@@ -10,7 +10,7 @@
         </span>
         </v-layout>
         <v-flex class="text-center">
-        <v-btn color="light-blue" rounded>Voir Info. </v-btn>
+        <v-btn color="light-blue" v-on:click="showInformation" rounded>Voir Info. </v-btn>
         </v-flex>
         <v-divider dark class="my-3"></v-divider>
         <v-flex align-content-space-around>
@@ -47,23 +47,30 @@
         <v-icon>home</v-icon>
       </v-btn>
       <v-btn v-if="connexion === false" v-on:click="logout" color="light-blue" rounded>
-        <span >Déconnection</span>
+        <span >Déconnexion</span>
       </v-btn>
       </v-toolbar>
 
     <v-content>
       <v-container text-center v-if="connexion" class="align-center">
         <br> <br> <br>
-        <v-card class="mx-auto" width="300" height="300" elevation="20">
+        <v-card class="mx-auto" width="300" max-height="550" min-height="300" elevation="20">
         <v-row justify="center">
-            <div>
-          <v-text-field prepend-icon="person" v-model="username" label="Username" required ></v-text-field>
-          <v-text-field prepend-icon="lock" v-model="password" label="Password" type="password" required></v-text-field>
+            <div v-if="inscription === false">
+          <v-text-field prepend-icon="person" v-model="username" label="Username" required></v-text-field>
+          <v-text-field prepend-icon="lock" v-model="password" label="Password" type="password" required ></v-text-field>
+            </div>
+          <div v-if="inscription">
+          <v-text-field prepend-icon="assignment" v-model="nom" label="Nom" required :rules='loginRules'></v-text-field>
+          <v-text-field prepend-icon="assignment" v-model="prenom" label="Prenom" required :rules='loginRules'></v-text-field>
+          <v-text-field prepend-icon="person" v-model="username" label="Username" required :rules='loginRules'></v-text-field>
+          <v-text-field prepend-icon="lock" v-model="password" label="Password" type="password" required :rules='loginRules'></v-text-field>
             </div>
         </v-row>
-          <br><br>
-          <v-btn v-on:click="login" color="light-blue" rounded>Connexion</v-btn>
-          <v-btn v-on:click="addLog" rounded>Inscription</v-btn>
+          <br>
+          <v-btn v-if="inscription === false" v-on:click="login" color="light-blue" rounded>Connexion</v-btn>
+          <v-btn v-if="inscription === false" @click.stop="inscription=!inscription" rounded>Inscription</v-btn>
+          <v-btn v-if="inscription" @click.stop="addLog" rounded>Inscription</v-btn>
           <p>{{message}}</p>
         </v-card>
       </v-container>
@@ -133,7 +140,7 @@
           <v-card-text>
             <span v-for="(item, i) in tabrank" :key="i">
               <v-layout align-content-space-around>
-                  <h3> Username: {{item.username}} </h3>
+                  <h3> {{item.username}} </h3>
                   <v-spacer></v-spacer>
                   <h3> Rang: {{item.rank}} </h3>
               </v-layout>
@@ -174,6 +181,24 @@
                   </v-row>
       </v-container>
 
+      <v-container v-if="information">
+        <v-card class="mx-auto" max-width="500" outlined>
+          <v-card-text>
+            <v-row justify="center" align-content-space-around>
+              <div>
+              <v-icon x-large>person</v-icon>
+              <br>
+            <h3> Nom : {{nom}} </h3> <v-spacer></v-spacer> <h3> Prenom : {{prenom}}</h3>
+            <br>
+            <h3> Username : {{username}}</h3> <v-spacer></v-spacer> <h3> Rang : {{rank}}</h3>
+            <br>
+            <h3> High Score : {{hscore}}</h3> <v-spacer></v-spacer> <h3> Partie Jouée : {{partieJouer}}</h3>
+              </div>
+            </v-row>
+          </v-card-text>
+        </v-card>
+      </v-container>
+
     </v-content>
 
     <v-layout class="align-end">
@@ -191,6 +216,7 @@
 export default {
   data: () => ({
     url: 'http://localhost:4000',
+    loginRules: [v => !!v || 'The input is required'],
 
     drawerbar: false,
     radioGroup: null,
@@ -200,13 +226,18 @@ export default {
     classement: false,
     history: false,
     correction: false,
+    information: false,
+    inscription: false,
 
     username: '',
     password: '',
+    nom: '',
+    prenom: '',
     hscore: 0,
     tabHscore: [],
     partieJouer: 0,
     historique: [],
+    rank: 0,
 
     questions: [
       { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'Bonjour'] },
@@ -249,11 +280,18 @@ export default {
       }
     },
     async addLog () {
-      const response = await this.axios.post(this.url + '/api/addLog', {
-        login: this.username,
-        password: this.password
-      })
-      this.message = response.data.message
+      if (this.username !== '' && this.password !== '' && this.nom !== '' && this.prenom !== '') {
+        const response = await this.axios.post(this.url + '/api/addLog', {
+          login: this.username,
+          password: this.password,
+          nom: this.nom,
+          prenom: this.prenom
+        })
+        this.message = response.data.message
+        if (this.message === 'Utilisateur créé avec succés') {
+          this.inscription = false
+        }
+      } else { this.message = 'Veuillez remplir tous les champs' }
     },
     async logout () {
       const response = await this.axios.post(this.url + '/api/logout', {
@@ -265,6 +303,8 @@ export default {
         this.connexion = true
         this.classement = false
         this.history = false
+        this.correction = false
+        this.information = false
       }
     },
 
@@ -282,6 +322,7 @@ export default {
           this.connexion = true
           this.classement = false
           this.history = false
+          this.information = false
         }
       }
     },
@@ -295,6 +336,10 @@ export default {
         partieJouer: this.partieJouer,
         historique: this.historique
       })
+      await this.axios.post(this.url + '/api/rankClassement', {
+      })
+      this.tabrank = response.data.tabrank
+      this.rank = response.data.rank
       console.log(response)
     },
 
@@ -359,6 +404,25 @@ export default {
       const response = await this.axios.post(this.url + '/api/rankClassement', {
       })
       this.tabrank = response.data.tabrank
+      this.rank = response.data.rank
+    },
+    async showInformation () {
+      this.drawerbar = false
+      this.connecte = false
+      this.history = false
+      this.classement = false
+      this.correction = false
+      this.information = true
+      const response = await this.axios.post(this.url + '/api/showInf', {
+        login: this.username,
+        password: this.password
+      })
+      this.nom = response.data.nom
+      this.prenom = response.data.prenom
+      this.rank = response.data.rank
+      this.username = response.data.username
+      this.hscore = response.data.hscore
+      this.partieJouer = response.data.partieJouer
     },
 
     lancementTest () {
@@ -375,6 +439,7 @@ export default {
       this.history = false
       this.test = false
       this.correction = false
+      this.information = false
     },
     showHistory () {
       this.drawerbar = false
@@ -382,6 +447,7 @@ export default {
       this.history = true
       this.classement = false
       this.correction = false
+      this.information = false
     }
   }
 }

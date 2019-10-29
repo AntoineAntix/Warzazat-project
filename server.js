@@ -32,6 +32,8 @@ app.use(express.static(path.join(__dirname, 'dist/')))
 const users = [{
   username: 'admin',
   password: 'admin',
+  nom: 'admin',
+  prenom: 'admin',
   hscore: 1000,
   tabHscore: [1000],
   rank: 0,
@@ -79,10 +81,13 @@ app.post('/api/addLog', (req, res) => {
     users.push({
       username: req.body.login,
       password: req.body.password,
+      nom: req.body.nom,
+      prenom: req.body.prenom,
       hscore: 0,
       tabHscore: [],
       partieJouer: 0,
-      historique: []
+      historique: [],
+      rank: 8
     })
     res.json({
       message: 'Utilisateur créé avec succés'
@@ -153,6 +158,30 @@ app.post('/api/rankClassement', (req, res) => {
   }
   res.json({
     tabrank: tabrank
+  })
+})
+
+app.post('/api/showInf', (req, res) => {
+  var rank = 0
+  users.sort(function (a, b) {
+    return b.hscore - a.hscore
+  })
+  for (var i = 0; i < users.length; i++) {
+    if (i === 0) { users[i].rank = rank }
+    if (i > 0) {
+      if (users[i].hscore === users[i - 1].hscore) { users[i].rank = users[i - 1].rank }
+      if (users[i].hscore < users[i - 1].hscore) { users[i].rank = users[i - 1].rank + 1 }
+    }
+  }
+
+  const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
+  res.json({
+    nom: user.nom,
+    prenom: user.prenom,
+    username: user.username,
+    partieJouer: user.partieJouer,
+    hscore: user.hscore,
+    rank: user.rank
   })
 })
 
