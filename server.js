@@ -39,6 +39,12 @@ const users = [{
   historique: []
 }]
 
+const tabrank = [{
+  username: 'admin',
+  hscore: 1000,
+  rank: 0
+}]
+
 const answer = [ 0, 0, 3, 3, 0, 1, 1 ]
 
 app.post('/api/login', (req, res) => {
@@ -57,7 +63,6 @@ app.post('/api/login', (req, res) => {
         message: 'Connecté',
         score: user.hscore,
         tabHscore: user.tabHscore,
-        rank: user.rank,
         partieJouer: user.partieJouer,
         historique: user.historique
       })
@@ -78,7 +83,6 @@ app.post('/api/addLog', (req, res) => {
       password: req.body.password,
       hscore: 0,
       tabHscore: [],
-      rank: 8,
       partieJouer: 0,
       historique: []
     })
@@ -100,7 +104,10 @@ app.post('/api/logout', (req, res) => {
 })
 
 app.post('/api/removeLog', (req, res) => {
-  const indice = users.indexOf(u => u.username === req.body.login && u.password === req.body.password)
+  const indice = users.findIndex(u => u.username === req.body.login && u.password === req.body.password)
+  console.log(req.body.login)
+  console.log(req.body.password)
+  console.log(indice)
   users.splice(indice, 1)
   req.session.user = 0
   res.json({
@@ -112,7 +119,6 @@ app.post('/api/newHscore', (req, res) => {
   const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
   user.hscore = req.body.hscore
   user.tabHscore = req.body.tabHscore
-  user.rank = req.body.rank
   user.partieJouer = req.body.partieJouer
   user.historique = req.body.historique
   res.json({
@@ -130,6 +136,29 @@ app.post('/api/nextQ', (req, res) => {
       message: 'not good'
     })
   }
+})
+
+app.post('/api/rankClassement', (req, res) => {
+  tabrank.splice(0, tabrank.length)
+  var rank = 0
+  users.sort(function (a, b) {
+    return b.hscore - a.hscore
+  })
+  for (var i = 0; i < users.length; i++) {
+    if (i === 0) { users[i].rank = rank }
+    if (i > 0) {
+      if (users[i].hscore === users[i - 1].hscore) { users[i].rank = users[i - 1].rank }
+      if (users[i].hscore < users[i - 1].hscore) { users[i].rank = users[i - 1].rank + 1 }
+    }
+    tabrank.push({
+      username: users[i].username,
+      hscore: users[i].hscore,
+      rank: users[i].rank
+    })
+  }
+  res.json({
+    tabrank: tabrank
+  })
 })
 
 app.get('/api/admin', (req, res) => {

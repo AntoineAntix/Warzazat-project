@@ -131,11 +131,9 @@
       <v-container v-if="classement">
         <v-card class="mx-auto" max-width="1000" outlined>
           <v-layout class="align-center">
-              <v-flex min-width="300">
           <v-card-text>
-            <span> rang : {{rank}} pour {{ partieJouer }} parties</span>
+            <span v-for="(item, i) in tabrank" :key="i"> username : {{item.username}} rang : {{item.rank}} avec {{ item.hscore }} points <br> </span>
           </v-card-text>
-              </v-flex>
           </v-layout>
         </v-card>
       </v-container>
@@ -194,7 +192,6 @@ export default {
     password: '',
     hscore: 0,
     tabHscore: [],
-    rank: 8,
     partieJouer: 0,
     historique: [],
 
@@ -214,6 +211,11 @@ export default {
     indexRep: 0,
     repQ: [],
     grep: false,
+    tabrank: [{
+      username: '',
+      hscore: 0,
+      rank: 0
+    }],
     score: 0
   }),
   methods: {
@@ -229,7 +231,6 @@ export default {
         this.connecte = true
         this.hscore = response.data.score
         this.tabHscore = response.data.tabHscore
-        this.rank = response.data.rank
         this.partieJouer = response.data.partieJouer
         this.historique = response.data.historique
       }
@@ -258,6 +259,8 @@ export default {
       var validationSuppr = window.confirm('Toutes vos données vont être supprimées de manière définitive. \n Voulez vous suprimer votre compte ? ')
       if (validationSuppr) {
         const response = await this.axios.post(this.url + '/api/removeLog', {
+          login: this.username,
+          password: this.password
         })
         this.message = response.data.message
         if (this.message === 'Compte Supprimé') {
@@ -276,7 +279,6 @@ export default {
         password: this.password,
         hscore: this.hscore,
         tabHscore: this.tabHscore,
-        rank: this.rank,
         partieJouer: this.partieJouer,
         historique: this.historique
       })
@@ -299,7 +301,6 @@ export default {
           this.index = 0
           if (this.hscore < this.score) {
             this.hscore = this.score
-            this.defRank(this.hscore)
           }
           this.partieJouer++
           this.tabHscore.push(this.score)
@@ -336,6 +337,16 @@ export default {
       })
       if (response.data.message === 'good') { this.grep = true } else { this.grep = false }
     },
+    async showClassement () {
+      this.drawerbar = false
+      this.connecte = false
+      this.classement = true
+      this.history = false
+      this.correction = false
+      const response = await this.axios.post(this.url + '/api/rankClassement', {
+      })
+      this.tabrank = response.data.tabrank
+    },
 
     lancementTest () {
       this.connecte = false
@@ -352,30 +363,12 @@ export default {
       this.test = false
       this.correction = false
     },
-    showClassement () {
-      this.drawerbar = false
-      this.connecte = false
-      this.classement = true
-      this.history = false
-      this.correction = false
-    },
     showHistory () {
       this.drawerbar = false
       this.connecte = false
       this.history = true
       this.classement = false
       this.correction = false
-    },
-
-    defRank (hscore) {
-      if (hscore === 0) { this.rank = 8 }
-      if (hscore === 1) { this.rank = 7 }
-      if (hscore === 2) { this.rank = 6 }
-      if (hscore === 3) { this.rank = 5 }
-      if (hscore === 4) { this.rank = 4 }
-      if (hscore === 5) { this.rank = 3 }
-      if (hscore === 6) { this.rank = 2 }
-      if (hscore === 7) { this.rank = 1 }
     }
   }
 }
