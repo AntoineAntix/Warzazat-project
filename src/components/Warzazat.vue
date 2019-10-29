@@ -289,7 +289,7 @@ export default {
           prenom: this.prenom
         })
         this.message = response.data.message
-        if (this.message === 'Utilisateur créé avec succés') {
+        if (this.message === 'Utilisateur créé avec succés' || this.message === 'Utilisateur existant, veuillez entrer de nouveaux identifiants') {
           this.inscription = false
         }
       } else { this.message = 'Veuillez remplir tous les champs' }
