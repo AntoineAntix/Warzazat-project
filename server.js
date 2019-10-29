@@ -48,8 +48,6 @@ const tabrank = [{
 const answer = [ 0, 0, 3, 3, 0, 1, 1 ]
 
 app.post('/api/login', (req, res) => {
-  console.log('req.body', req.body)
-  console.log('req.query', req.query)
   if (!req.session.userId) {
     const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
     if (!user) {
@@ -105,9 +103,6 @@ app.post('/api/logout', (req, res) => {
 
 app.post('/api/removeLog', (req, res) => {
   const indice = users.findIndex(u => u.username === req.body.login && u.password === req.body.password)
-  console.log(req.body.login)
-  console.log(req.body.password)
-  console.log(indice)
   users.splice(indice, 1)
   req.session.user = 0
   res.json({

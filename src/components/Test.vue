@@ -129,12 +129,21 @@
       </v-container>
 
       <v-container v-if="classement">
-        <v-card class="mx-auto" max-width="1000" outlined>
-          <v-layout class="align-center">
+        <v-card class="mx-auto" max-width="500" outlined>
           <v-card-text>
-            <span v-for="(item, i) in tabrank" :key="i"> username : {{item.username}} rang : {{item.rank}} avec {{ item.hscore }} points <br> </span>
+            <span v-for="(item, i) in tabrank" :key="i">
+              <v-layout align-content-space-around>
+                  <h3> Username: {{item.username}} </h3>
+                  <v-spacer></v-spacer>
+                  <h3> Rang: {{item.rank}} </h3>
+              </v-layout>
+                <br>
+                <span>  High score: {{ item.hscore }} points </span>
+              <br>
+              <v-divider dark class="my-3"></v-divider>
+              <br>
+              </span>
           </v-card-text>
-          </v-layout>
         </v-card>
       </v-container>
 
@@ -151,9 +160,13 @@
                     <span> {{ questions[index].title }}</span>
                     <br>
                     <span> Votre réponse est : {{ questions[index].prop[indexRep] }}</span>
-                    <br>
-                    <span v-if="grep"> Bonne Réponse </span>
-                    <span v-if="grep === false"> Mauvaise Réponse </span>
+                    <br> <br>
+                    <v-card class="mx-auto" max-width="200" outlined>
+                      <v-card-text>
+                        <span v-if="grep" style="color:green"> Bonne Réponse </span>
+                        <span v-if="grep === false" style="color:red"> Mauvaise Réponse </span>
+                      </v-card-text>
+                    </v-card>
                     <br> <br>
                     <v-btn v-if="(index+1) < questions.length" v-on:click="nextQ" color="light-blue" rounded>Question suivante</v-btn>
                     <v-btn v-if="(index+1) === questions.length" v-on:click="nextQ" color="orange" rounded>Fin du test</v-btn>
