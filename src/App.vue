@@ -1,18 +1,18 @@
 <template color="black">
   <v-app>
     <v-content>
-      <Test/>
+      <Warzazat/>
     </v-content>
   </v-app>
 </template>
 
 <script>
-import Test from './components/Test'
+import Warzazat from './components/Warzazat'
 
 export default {
   name: 'App',
   components: {
-    Test
+    Warzazat
   },
   data: () => ({
     //
