@@ -216,7 +216,7 @@
 
 export default {
   data: () => ({
-    url: 'http://localhost:4000',
+    url: '', // http://localhost:4000',
     loginRules: [v => !!v || 'The input is required'],
 
     drawerbar: false,
