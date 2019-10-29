@@ -1,7 +1,7 @@
 <template>
     <div>
       <v-app style="background: url(https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg )">
-      <v-navigation-drawer fixed clipped v-model="drawer" v-if="connexion === false && drawerbar" app>
+      <v-navigation-drawer fixed clipped v-model="drawer" v-if="connexion === false && test === false && drawerbar" app>
         <v-layout align-content-space-around justify-center>
         <v-icon x-large>person</v-icon>
         <span>
@@ -26,9 +26,13 @@
         </v-btn>
         <v-divider dark class="my-3"></v-divider>
 
-         <v-btn text block>
+         <v-btn text block v-on:click="showHistory">
           <v-icon>history</v-icon> Historique partie
         </v-btn>
+        <v-divider dark class="my-3"></v-divider>
+
+        <br> <br> <br>
+          <v-btn v-on:click="removeLog" color="red" block rounded> Supprimer le compte </v-btn>
         </v-flex>
       </v-navigation-drawer>
 
@@ -49,6 +53,7 @@
 
     <v-content>
       <v-container text-center v-if="connexion" class="align-center">
+        <br> <br> <br>
         <v-card class="mx-auto" width="300" height="300" elevation="20">
         <v-row justify="center">
             <div>
@@ -135,6 +140,29 @@
         </v-card>
       </v-container>
 
+      <v-container v-if="history">
+        <v-layout align-content-space-around v-if="correction === false">
+          <span v-for="(item, i) in partieJouer" :key="i" :label="item">
+            <v-btn v-on:click="startCorrection(i)"> partie {{i+1}} </v-btn>
+          </span>
+        </v-layout>
+        <v-row justify="center" v-if="correction">
+                  <div v-if="index >= 0">
+                    <span style="bold"> Question {{ index + 1 }}:</span>
+                    <br>
+                    <span> {{ questions[index].title }}</span>
+                    <br>
+                    <span> Votre réponse est : {{ questions[index].prop[indexRep] }}</span>
+                    <br>
+                    <span v-if="grep"> Bonne Réponse </span>
+                    <span v-if="grep === false"> Mauvaise Réponse </span>
+                    <br> <br>
+                    <v-btn v-if="(index+1) < questions.length" v-on:click="nextQ" color="light-blue" rounded>Question suivante</v-btn>
+                    <v-btn v-if="(index+1) === questions.length" v-on:click="nextQ" color="orange" rounded>Fin du test</v-btn>
+                    </div>
+                  </v-row>
+      </v-container>
+
     </v-content>
 
     <v-layout class="align-end">
@@ -159,6 +187,8 @@ export default {
     connecte: false,
     test: false,
     classement: false,
+    history: false,
+    correction: false,
 
     username: '',
     password: '',
@@ -166,9 +196,7 @@ export default {
     tabHscore: [],
     rank: 8,
     partieJouer: 0,
-    historique: [{
-      rep: []
-    }],
+    historique: [],
 
     questions: [
       { title: 'Combien font 2 + 2 ?', prop: ['2 au carré', '2', 'Bonjour'] },
@@ -182,7 +210,10 @@ export default {
 
     message: '',
     index: 0,
+    indexCorrection: 0,
+    indexRep: 0,
     repQ: [],
+    grep: false,
     score: 0
   }),
   methods: {
@@ -200,6 +231,7 @@ export default {
         this.tabHscore = response.data.tabHscore
         this.rank = response.data.rank
         this.partieJouer = response.data.partieJouer
+        this.historique = response.data.historique
       }
     },
     async addLog () {
@@ -218,6 +250,23 @@ export default {
         this.connecte = false
         this.connexion = true
         this.classement = false
+        this.history = false
+      }
+    },
+
+    async removeLog () {
+      var validationSuppr = window.confirm('Toutes vos données vont être supprimées de manière définitive. \n Voulez vous suprimer votre compte ? ')
+      if (validationSuppr) {
+        const response = await this.axios.post(this.url + '/api/removeLog', {
+        })
+        this.message = response.data.message
+        if (this.message === 'Compte Supprimé') {
+          this.test = false
+          this.connecte = false
+          this.connexion = true
+          this.classement = false
+          this.history = false
+        }
       }
     },
 
@@ -228,53 +277,96 @@ export default {
         hscore: this.hscore,
         tabHscore: this.tabHscore,
         rank: this.rank,
-        partieJouer: this.partieJouer
+        partieJouer: this.partieJouer,
+        historique: this.historique
       })
       console.log(response)
     },
 
     async nextQ () {
-      const response = await this.axios.post(this.url + '/api/nextQ', {
-        index: this.index,
-        rep: this.radioGroup
-      })
+      if (this.test === true) {
+        const response = await this.axios.post(this.url + '/api/nextQ', {
+          index: this.index,
+          rep: this.radioGroup
+        })
+        if (response.data.message === 'good') { this.score++ } else { console.log('wrong answer') }
 
-      if (response.data.message === 'good') { this.score++ } else { console.log('wrong answer') }
-
-      this.index++
-      this.repQ.push(this.radioGroup)
-      this.radioGroup = null
-      if (this.index >= Object.keys(this.questions).length) {
-        this.index = 0
-        if (this.hscore < this.score) {
-          this.hscore = this.score
-          this.defRank(this.hscore)
+        this.index++
+        if (this.radioGroup != null) { this.historique.push(this.radioGroup) }
+        if (this.radioGroup === null) { this.historique.push(null) }
+        this.radioGroup = null
+        if (this.index >= Object.keys(this.questions).length) {
+          this.index = 0
+          if (this.hscore < this.score) {
+            this.hscore = this.score
+            this.defRank(this.hscore)
+          }
+          this.partieJouer++
+          this.tabHscore.push(this.score)
+          this.test = false
+          this.connecte = true
+          this.newHScore()
         }
-        this.partieJouer++
-        this.tabHscore.push(this.score)
-        this.historique.push(this.repQ)
-        this.test = false
-        this.connecte = true
-        this.newHScore()
+      }
+      if (this.correction === true) {
+        this.indexCorrection++
+        this.index++
+        this.indexRep = this.historique[this.indexCorrection]
+        if (this.index >= Object.keys(this.questions).length) {
+          this.indexCorrection = 0
+          this.indexRep = 0
+          this.index = 0
+          this.correction = false
+        }
+        const response = await this.axios.post(this.url + '/api/nextQ', {
+          index: this.index,
+          rep: this.indexRep
+        })
+        if (response.data.message === 'good') { this.grep = true } else { this.grep = false }
       }
     },
+    async startCorrection (i) {
+      this.drawerbar = false
+      this.correction = true
+      this.indexCorrection = i * 7
+      this.indexRep = this.historique[this.indexCorrection]
+      const response = await this.axios.post(this.url + '/api/nextQ', {
+        index: this.index,
+        rep: this.indexRep
+      })
+      if (response.data.message === 'good') { this.grep = true } else { this.grep = false }
+    },
+
     lancementTest () {
       this.connecte = false
       this.test = true
-      this.classement = false
       this.score = 0
       this.index = 0
     },
     homeReturn () {
+      this.drawerbar = false
       this.connecte = true
       this.connexion = false
       this.classement = false
+      this.history = false
       this.test = false
+      this.correction = false
     },
     showClassement () {
+      this.drawerbar = false
       this.connecte = false
       this.classement = true
+      this.history = false
+      this.correction = false
     },
+    showHistory () {
+      this.drawerbar = false
+      this.connecte = false
+      this.history = true
+      this.classement = false
+      this.correction = false
+    },
+
     defRank (hscore) {
       if (hscore === 0) { this.rank = 8 }
       if (hscore === 1) { this.rank = 7 }

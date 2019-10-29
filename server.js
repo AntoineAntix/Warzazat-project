@@ -35,7 +35,8 @@ const users = [{
   hscore: 1000,
   tabHscore: [1000],
   rank: 0,
-  partieJouer: 0
+  partieJouer: 0,
+  historique: []
 }]
 
 const answer = [ 0, 0, 3, 3, 0, 1, 1 ]
@@ -57,7 +58,8 @@ app.post('/api/login', (req, res) => {
         score: user.hscore,
         tabHscore: user.tabHscore,
         rank: user.rank,
-        partieJouer: user.partieJouer
+        partieJouer: user.partieJouer,
+        historique: user.historique
       })
     }
   } else {
@@ -77,7 +79,8 @@ app.post('/api/addLog', (req, res) => {
       hscore: 0,
       tabHscore: [],
       rank: 8,
-      partieJouer: 0
+      partieJouer: 0,
+      historique: []
     })
     res.json({
       message: 'Utilisateur créé avec succés'
@@ -96,12 +99,22 @@ app.post('/api/logout', (req, res) => {
   })
 })
 
+app.post('/api/removeLog', (req, res) => {
+  const indice = users.indexOf(u => u.username === req.body.login && u.password === req.body.password)
+  users.splice(indice, 1)
+  req.session.user = 0
+  res.json({
+    message: 'Compte Supprimé'
+  })
+})
+
 app.post('/api/newHscore', (req, res) => {
   const user = users.find(u => u.username === req.body.login && u.password === req.body.password)
   user.hscore = req.body.hscore
   user.tabHscore = req.body.tabHscore
   user.rank = req.body.rank
   user.partieJouer = req.body.partieJouer
+  user.historique = req.body.historique
   res.json({
     message: 'Score saved'
   })
